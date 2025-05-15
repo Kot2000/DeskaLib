@@ -1,11 +1,17 @@
-package math.tween
+package me.deska.deskalib.math.tween
 
-import math.MathHelper.lerp
+import me.deska.deskalib.math.MathHelper.lerp
 
-interface TweenHandler {
+interface SpringHandler: TweenHandler {
     companion object {
         fun create(initialValue: Double) = object : TweenHandler {
             override var value: Double = initialValue
+
+            var endValue: Double
+                get() = tweenData?.end ?: value
+                set(value) = if (tweenData != null)
+                    tweenData!!.end = value
+                    else Unit
 
             private var tweenData: TweenData? = null
 
@@ -50,15 +56,9 @@ interface TweenHandler {
         }
     }
 
-    var value: Double
-
-    fun update(currentTime: Long)
-    fun tween(value: Double, startTime: Long, info: TweenInfo)
-    fun clear()
-
     private data class TweenData(
         val start: Double,
-        val end: Double,
+        var end: Double,
         val info: TweenInfo,
         val startTime: Long
     )

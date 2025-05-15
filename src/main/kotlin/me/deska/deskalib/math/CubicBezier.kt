@@ -1,4 +1,4 @@
-package math
+package me.deska.deskalib.math
 
 import kotlin.math.abs
 

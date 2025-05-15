@@ -1,4 +1,4 @@
-package math.tween
+package me.deska.deskalib.math.tween
 
 interface TweenInfo {
     val duration: Long

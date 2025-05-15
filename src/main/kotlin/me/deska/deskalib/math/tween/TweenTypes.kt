@@ -1,6 +1,6 @@
-package math.tween
+package me.deska.deskalib.math.tween
 
-import math.CubicBezier
+import me.deska.deskalib.math.CubicBezier
 
 enum class TweenTypes(val bezier: CubicBezier) {
     LINEAR(CubicBezier(0.0, 0.0, 1.0, 1.0)),
