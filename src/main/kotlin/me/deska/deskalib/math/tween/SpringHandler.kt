@@ -1,42 +1,33 @@
 package me.deska.deskalib.math.tween
 
 import me.deska.deskalib.math.MathHelper.lerp
+import kotlin.math.floor
 
-interface SpringHandler: TweenHandler {
+interface SpringHandler : TweenHandler {
     companion object {
-        fun create(initialValue: Double) = object : TweenHandler {
+        fun create(initialValue: Double) = object : SpringHandler {
             override var value: Double = initialValue
 
-            var endValue: Double
-                get() = tweenData?.end ?: value
-                set(value) = if (tweenData != null)
-                    tweenData!!.end = value
-                    else Unit
-
             private var tweenData: TweenData? = null
+
+            override var endValue: Double
+                get() = tweenData?.end ?: value
+                set(newEnd) {
+                    tweenData?.end = newEnd
+                }
 
             override fun update(currentTime: Long) {
                 tweenData?.let { data ->
                     val elapsedTime = currentTime - data.startTime
                     val duration = data.info.duration.toDouble()
 
-                    if (duration <= 0 || elapsedTime >= duration) {
+                    if (duration <= 0.0) {
                         value = data.end
-                        tweenData = null
                         return
                     }
 
-                    val iter = (elapsedTime / duration).toInt()
+                    val iter = floor(elapsedTime / duration).toInt()
                     val timeNormal = (elapsedTime - iter * duration) / duration
-
-                    if (data.info.repeats >= 0 && iter >= data.info.repeats) {
-                        value = if (data.info.reverses && (data.info.repeats % 2 == 1))
-                            data.start
-                        else
-                            data.end
-                        tweenData = null
-                        return
-                    }
 
                     val reversed = data.info.reverses && (iter % 2 == 1)
                     val t = if (reversed) 1.0 - timeNormal else timeNormal
@@ -56,8 +47,10 @@ interface SpringHandler: TweenHandler {
         }
     }
 
+    var endValue: Double
+
     private data class TweenData(
-        val start: Double,
+        var start: Double,
         var end: Double,
         val info: TweenInfo,
         val startTime: Long

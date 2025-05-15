@@ -1,6 +1,7 @@
 package me.deska.deskalib.math.tween
 
 import me.deska.deskalib.math.MathHelper.lerp
+import kotlin.math.floor
 
 interface TweenHandler {
     companion object {
@@ -11,26 +12,23 @@ interface TweenHandler {
 
             override fun update(currentTime: Long) {
                 tweenData?.let { data ->
+
                     val elapsedTime = currentTime - data.startTime
                     val duration = data.info.duration.toDouble()
+                    val maxDuration = duration * (data.info.repeats + 1)
 
-                    if (duration <= 0 || elapsedTime >= duration) {
-                        value = data.end
-                        tweenData = null
-                        return
-                    }
-
-                    val iter = (elapsedTime / duration).toInt()
-                    val timeNormal = (elapsedTime - iter * duration) / duration
-
-                    if (data.info.repeats >= 0 && iter >= data.info.repeats) {
-                        value = if (data.info.reverses && (data.info.repeats % 2 == 1))
+                    if (duration <= 0 || elapsedTime >= maxDuration) {
+                        value = if (data.info.reverses && (data.info.repeats % 2 == 1)) {
                             data.start
-                        else
+                        } else {
                             data.end
+                        }
                         tweenData = null
                         return
                     }
+
+                    val iter = floor(elapsedTime / duration).toInt()
+                    val timeNormal = (elapsedTime - iter * duration) / duration
 
                     val reversed = data.info.reverses && (iter % 2 == 1)
                     val t = if (reversed) 1.0 - timeNormal else timeNormal
